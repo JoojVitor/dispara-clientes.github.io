@@ -42,6 +42,8 @@ function efetueDisparo() {
 
     var erros = [];
 
+    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+
     alvos["mailing"].forEach(alvo => {
        var body = monteBody(alvo);
 
@@ -61,7 +63,7 @@ function efetueDisparo() {
                 erros.push({"erro": textStatus["responseJSON"], "alvo": alvo["Telefone"]});
             },
             type: "POST",
-            url: "https://sac-mpealgartelecom.ascbrazil.com.br/rest/v1/sendHsm",
+            url: `${proxyUrl}https://sac-mpealgartelecom.ascbrazil.com.br/rest/v1/sendHsm`,
             headers: header,
             crossDomain: true
         });
