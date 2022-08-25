@@ -62,7 +62,8 @@ function efetueDisparo() {
             },
             type: "POST",
             url: "https://sac-mpealgartelecom.ascbrazil.com.br/rest/v1/sendHsm",
-            headers: header
+            headers: header,
+            crossDomain: true
         });
     });
 
