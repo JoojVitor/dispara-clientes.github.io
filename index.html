@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Dispara Clientes</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="script.js"></script>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <label for="input">Authorization Key (não tô muito afim de pensar numa solução mais segura pra isso agora e preciso colocar no Git público)</label>
+    <input id="auth" type="text">
+    <div id="drop_zone" class="invalido" ondrop="processeArquivo(event);" ondragover="dragOverHandler(event);">
+        <p>Arraste o arquivo JSON aqui ou escolha o arquivo...</p>
+    </div>
+    <div class="botaoDisparo">
+        <button type="button" onclick="efetueDisparo()" disabled>Efetua Disparo</button>
+    </div>
+    <div class="status">
+        <h1></h1>
+    </div>
+  </body>
+</html>
