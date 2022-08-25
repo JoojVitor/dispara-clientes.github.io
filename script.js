@@ -1,13 +1,10 @@
 let alvos;
 
 function dragOverHandler(ev) {
-    console.log("File(s) in drop zone");
     ev.preventDefault();
 }
 
 function processeArquivo(ev) {
-    console.log("File(s) dropped");
-
     ev.preventDefault();
 
     var arquivos = ev.dataTransfer.files;
@@ -15,7 +12,7 @@ function processeArquivo(ev) {
     for (var i = 0, arquivo; arquivo = arquivos[i]; i++) {
 
         if (!arquivo.type.match("application/json")) {
-            $("#drop_zone p").text("Arquivo não é um JSON!")
+            $("#drop_zone p").text("Arquivo não é um JSON!");
             return;
         }
 
@@ -24,11 +21,10 @@ function processeArquivo(ev) {
         reader.onload = (function() {
             return function(e) {
                 arquivoProcessado = JSON.parse(e.target.result);
-                console.log(arquivoProcessado);
 
                 botao = $(".botaoDisparo button");
                 if (botao.attr("disabled")) {
-                    botao.removeAttr("disabled")
+                    botao.removeAttr("disabled");
                 }
 
                 $("#drop_zone").removeClass("invalido");
@@ -44,6 +40,8 @@ function processeArquivo(ev) {
 
 function efetueDisparo() {
 
+    var erros = [];
+
     alvos["mailing"].forEach(alvo => {
        var body = monteBody(alvo);
 
@@ -55,20 +53,22 @@ function efetueDisparo() {
         };
 
         $.ajax({
+            async: false,
             contentType: "application/json",
             data: JSON.stringify(body),
             dataType: "json",
-            success: function(data, textStatus) {
-                console.log(data);
-            },
             error: function(textStatus) {
-                console.log(textStatus);
+                erros.push({"erro": textStatus["responseJSON"], "alvo": alvo["Telefone"]});
             },
             type: "POST",
             url: "https://sac-mpealgartelecom.ascbrazil.com.br/rest/v1/sendHsm",
             headers: header
         });
     });
+
+    if (erros.length > 0) {
+        download(JSON.stringify(erros), "relatorio_erros.json", "text/plain")
+    }
 }
 
 function monteBody(alvo) {
@@ -81,4 +81,12 @@ function monteBody(alvo) {
         "flow_variaveis": {"idCliente": "53027"},
         "contato": {"telefone": parseInt(`55${alvo["Telefone"]}`), "nome": alvo["nome"]}
     }
+}
+
+function download(content, fileName, contentType) {
+    var a = document.createElement("a");
+    var file = new Blob([content], {type: contentType});
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
 }
