@@ -50,7 +50,7 @@ function efetueDisparo() {
        request = new XMLHttpRequest();
 
         header = {
-            "Authorization": $(".auth").val(),
+            "Authorization": `${$("#auth").val()}`,
             "Access-Control-Allow-Origin": "*"
         };
 
