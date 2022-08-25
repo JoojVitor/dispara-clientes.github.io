@@ -42,7 +42,7 @@ function efetueDisparo() {
 
     var erros = [];
 
-    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+    const proxyUrl = "https://afternoon-sierra-49318.herokuapp.com/";
 
     alvos["mailing"].forEach(alvo => {
        var body = monteBody(alvo);
