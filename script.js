@@ -51,7 +51,6 @@ function efetueDisparo() {
 
         header = {
             "Authorization": `${$("#auth").val()}`,
-            "Access-Control-Allow-Origin": "*"
         };
 
         $.ajax({
