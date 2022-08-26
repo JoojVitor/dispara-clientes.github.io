@@ -1,13 +1,9 @@
 #drop_zone {
-    border: 5px solid green;
+    border: 2px dashed gray;
     padding: 1rem;
     margin: 1rem;
     width:  fit-content;
     height: fit-content;
-}
-
-#drop_zone.invalido {
-    border: 5px solid red !important;
 }
 
 button {
