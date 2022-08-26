@@ -62,7 +62,7 @@ function efetueDisparo() {
                 erros.push({"erro": textStatus["responseJSON"], "alvo": alvo["Telefone"]});
             },
             type: "POST",
-            url: `https://sac-mpealgartelecom.ascbrazil.com.br/rest/v1/sendHsm`,
+            url: `${proxyUrl}https://sac-mpealgartelecom.ascbrazil.com.br/rest/v1/sendHsm`,
             headers: header,
             crossDomain: true
         });
