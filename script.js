@@ -27,7 +27,7 @@ function processeArquivo(ev) {
                     botao.removeAttr("disabled");
                 }
 
-                $("#drop_zone").removeClass("invalido");
+                $("#drop_zone").css("border-color","green");
                 $("#drop_zone p").text("Arquivo carregado com sucesso!");
 
                 alvos = arquivoProcessado;
@@ -77,7 +77,7 @@ function monteBody(alvo) {
     return {
         "cod_conta": 17,
         "hsm": alvo["type"],
-        "cod_flow": "482",
+        "cod_flow": "699",
         "start_flow": 1,
         "variaveis": ["variavelLink"],
         "flow_variaveis": {"idCliente": "53027"},
