@@ -81,8 +81,9 @@ function monteBody(alvo) {
         "start_flow": 1,
         "flow_variaveis": { "cpfCnpj": alvo["cpfCnpj"] },
         "contato": { "telefone": parseInt(`55${alvo["Telefone"]}`), "nome": alvo["nome"] },
-        "url_file": "https://raw.githubusercontent.com/JoojVitor/dispara-clientes.github.io/master/img/Sem%20T%C3%ADtulo-2.jpg",
+        "url_file":"https://raw.githubusercontent.com/nicolassegatto/disparadorHSM-JoojVitor/master/img/Sem%20T%C3%ADtulo-2.jpg",
         "tipo_envio": 1,
+        "variaveis": [],
         "botoes": ["Sim", "Não"]
     }
 }
