@@ -43,30 +43,18 @@ function efetueDisparo() {
     let erros = [];
     let progresso = 0;
     let count = 0;
-
     let barraProgresso = $("#barra-progresso .progress-bar");
-
     let authKey = $("#auth").val();
 
-    if (authKey === "undefined") {
-        $("#modal-alerta .modal-title").text("Falha");
-        $("#modal-alerta .modal-body p").text("O campo \"ASC Authorization Key\" não foi preenchido!");
-
-        $("#modal-alerta").modal("show");
-
-        $("#auth").trigger("focus");
-
+    if (!authKey) {
+        abraModalAlerta("Campo não preenchido", "Não foi fornecida a ASC Authorization Key.")
         return;
     }
 
     const proxyUrl = "https://afternoon-sierra-49318.herokuapp.com/";
 
     alvos["mailing"].forEach(alvo => {
-        let body = monteBody(alvo);
-
         count++;
-
-        request = new XMLHttpRequest();
 
         header = {
             "Authorization": `${authKey}`,
@@ -74,16 +62,16 @@ function efetueDisparo() {
 
         $.ajax({
             async: false,
+            crossDomain: true,
             contentType: "application/json",
-            data: JSON.stringify(body),
             dataType: "json",
+            type: "POST",
+            data: JSON.stringify(monteBody(alvo)),
+            headers: header,
+            url: `${proxyUrl}https://sac-mpealgartelecom.ascbrazil.com.br/rest/v1/sendHsm`,
             error: function (textStatus) {
                 erros.push({ "erro": textStatus["responseJSON"], "alvo": alvo["Telefone"] });
-            },
-            type: "POST",
-            url: `${proxyUrl}https://sac-mpealgartelecom.ascbrazil.com.br/rest/v1/sendHsm`,
-            headers: header,
-            crossDomain: true
+            }
         });
 
         progresso += Math.round((count * 100) / alvos["mailing"].length);
@@ -100,13 +88,6 @@ function efetueDisparo() {
 
     if (parseInt(barraProgresso.textContent) >= 99) {
         barraProgresso.setAttribute("hidden", "");
-
-        $("#modal-alerta .modal-title").text("Concluído");
-        $("#modal-alerta .modal-body p").text("Processo finalizado com sucesso!");
-
-        $("#modal-alerta").on("shown.bs.modal", function () {
-            $("#botal-modal").trigger("focus")
-        });
     }
 }
 
@@ -123,6 +104,19 @@ function monteBody(alvo) {
         "variaveis": [],
         "botoes": ["Sim", "Não"]
     }
+}
+
+function abraModalAlerta(titulo, mensagem) {
+    BootstrapDialog.show({
+        title: `${titulo}`,
+        message: `${mensagem}`,
+        buttons: [{
+            label: 'Fechar',
+            action: function(dialog) {
+                dialog.close();
+            }
+        }]
+    });
 }
 
 function download(content, fileName, contentType) {
