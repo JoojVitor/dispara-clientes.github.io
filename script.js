@@ -1,4 +1,4 @@
-let alvos;
+var alvos;
 
 function dragOverHandler(ev) {
     ev.preventDefault();
@@ -7,28 +7,28 @@ function dragOverHandler(ev) {
 function processeArquivo(ev) {
     ev.preventDefault();
 
-    var arquivos = ev.dataTransfer.files;
+    let arquivos = ev.dataTransfer.files;
 
     for (var i = 0, arquivo; arquivo = arquivos[i]; i++) {
 
         if (!arquivo.type.match("application/json")) {
-            $("#drop_zone p").text("Arquivo não é um JSON!");
+            $("#drop-zone p").text("Arquivo não é um JSON!");
             return;
         }
 
-        var reader = new FileReader();
+        let reader = new FileReader();
 
         reader.onload = (function () {
             return function (e) {
                 arquivoProcessado = JSON.parse(e.target.result);
 
-                botao = $(".botaoDisparo button");
+                botao = $("#botao-disparo button");
                 if (botao.attr("disabled")) {
                     botao.removeAttr("disabled");
                 }
 
-                $("#drop_zone").css("border-color", "green");
-                $("#drop_zone p").text("Arquivo carregado com sucesso!");
+                $("#drop-zone").css("border-color", "green");
+                $("#drop-zone p").text("Arquivo carregado com sucesso!");
 
                 alvos = arquivoProcessado;
             };
@@ -40,17 +40,36 @@ function processeArquivo(ev) {
 
 function efetueDisparo() {
 
-    var erros = [];
+    let erros = [];
+    let progresso = 0;
+    let count = 0;
+
+    let barraProgresso = $("#barra-progresso .progress-bar");
+
+    let authKey = $("#auth").val();
+
+    if (authKey === "undefined") {
+        $("#modal-alerta .modal-title").text("Falha");
+        $("#modal-alerta .modal-body p").text("O campo \"ASC Authorization Key\" não foi preenchido!");
+
+        $("#modal-alerta").modal("show");
+
+        $("#auth").trigger("focus");
+
+        return;
+    }
 
     const proxyUrl = "https://afternoon-sierra-49318.herokuapp.com/";
 
     alvos["mailing"].forEach(alvo => {
-        var body = monteBody(alvo);
+        let body = monteBody(alvo);
+
+        count++;
 
         request = new XMLHttpRequest();
 
         header = {
-            "Authorization": `${$("#auth").val()}`,
+            "Authorization": `${authKey}`,
         };
 
         $.ajax({
@@ -66,10 +85,28 @@ function efetueDisparo() {
             headers: header,
             crossDomain: true
         });
+
+        progresso += Math.round((count * 100) / alvos["mailing"].length);
+
+        barraProgresso.setAttribute("style", `width: ${progresso}`);
+        barraProgresso.setAttribute("aria-valuenow", `${progresso}`);
+        barraProgresso.textContent = `${progresso}%`;
+        barraProgresso.removeAttribute("hidden");
     });
 
     if (erros.length > 0) {
         download(JSON.stringify(erros), "relatorio_erros.json", "text/plain")
+    }
+
+    if (parseInt(barraProgresso.textContent) >= 99) {
+        barraProgresso.setAttribute("hidden", "");
+
+        $("#modal-alerta .modal-title").text("Concluído");
+        $("#modal-alerta .modal-body p").text("Processo finalizado com sucesso!");
+
+        $("#modal-alerta").on("shown.bs.modal", function () {
+            $("#botal-modal").trigger("focus")
+        });
     }
 }
 
@@ -89,8 +126,8 @@ function monteBody(alvo) {
 }
 
 function download(content, fileName, contentType) {
-    var a = document.createElement("a");
-    var file = new Blob([content], { type: contentType });
+    let a = document.createElement("a");
+    let file = new Blob([content], { type: contentType });
     a.href = URL.createObjectURL(file);
     a.download = fileName;
     a.click();
