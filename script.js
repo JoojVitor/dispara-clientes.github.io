@@ -22,9 +22,8 @@ function processeArquivo(ev) {
             return function (e) {
                 arquivoProcessado = JSON.parse(e.target.result);
 
-                botao = $("#botao-disparo button");
-                if (botao.attr("disabled")) {
-                    botao.removeAttr("disabled");
+                if ($("#botao-disparo button").attr("disabled")) {
+                    $("#botao-disparo button").removeAttr("disabled");
                 }
 
                 $("#drop-zone").css("border-color", "green");
@@ -43,51 +42,47 @@ function efetueDisparo() {
     let erros = [];
     let progresso = 0;
     let count = 0;
-    let barraProgresso = $("#barra-progresso .progress-bar");
-    let authKey = $("#auth").val();
 
-    if (!authKey) {
-        abraModalAlerta("Campo não preenchido", "Não foi fornecida a ASC Authorization Key.")
+    if (!$("#auth").val()) {
+        abraModalSimples("Campo não preenchido", "Não foi fornecida a ASC Authorization Key.")
         return;
     }
 
     const proxyUrl = "https://afternoon-sierra-49318.herokuapp.com/";
 
+    $("#barra-progresso").removeAttr("hidden");
+
     alvos["mailing"].forEach(alvo => {
         count++;
 
         header = {
-            "Authorization": `${authKey}`,
+            "Authorization": `${$("#auth").val()}`,
         };
 
         $.ajax({
             async: false,
             crossDomain: true,
+            cache: false,
             contentType: "application/json",
             dataType: "json",
             type: "POST",
             data: JSON.stringify(monteBody(alvo)),
             headers: header,
             url: `${proxyUrl}https://sac-mpealgartelecom.ascbrazil.com.br/rest/v1/sendHsm`,
-            error: function (textStatus) {
-                erros.push({ "erro": textStatus["responseJSON"], "alvo": alvo["Telefone"] });
-            }
+
+        }).fail(function(textStatus) {
+            erros.push({ "erro": textStatus["responseJSON"], "alvo": alvo["Telefone"]});
+        }).always(function() {
+            progresso = Math.round((count * 100) / alvos["mailing"].length);
+            atualizaValorBarraProgresso($("#barra-progresso .progress-bar"), progresso);
+            console.log(`opa ${progresso}`);
         });
-
-        progresso += Math.round((count * 100) / alvos["mailing"].length);
-
-        barraProgresso.setAttribute("style", `width: ${progresso}`);
-        barraProgresso.setAttribute("aria-valuenow", `${progresso}`);
-        barraProgresso.textContent = `${progresso}%`;
-        barraProgresso.removeAttribute("hidden");
     });
 
     if (erros.length > 0) {
-        download(JSON.stringify(erros), "relatorio_erros.json", "text/plain")
-    }
-
-    if (parseInt(barraProgresso.textContent) >= 99) {
-        barraProgresso.setAttribute("hidden", "");
+        abraModalBaixarRelatorio(erros);
+    } else {
+        abraModalSimples("Concluído", "Todos os clientes foram disparados com sucesso.")
     }
 }
 
@@ -106,23 +101,72 @@ function monteBody(alvo) {
     }
 }
 
-function abraModalAlerta(titulo, mensagem) {
+function atualizaValorBarraProgresso(barraProgresso, valor) {
+    barraProgresso.attr("style", `width: ${valor}%`);
+    barraProgresso.attr("aria-valuenow", `${valor}`);
+    barraProgresso.text(`${valor}%`);
+}
+
+function abraModalBaixarRelatorio(dadosJSON) {
     BootstrapDialog.show({
-        title: `${titulo}`,
-        message: `${mensagem}`,
+        title: "Concluído com falhas",
+        message: "O processo foi concluído, mas alguns clientes não foram disparados. Deseja baixar o relatório?",
+        animate: true,
         buttons: [{
-            label: 'Fechar',
+            label: "Sim",
             action: function(dialog) {
+                download(JSON.stringify(dadosJSON), "relatorio.json", "text/plain");
+                
+                atualizaValorBarraProgresso($("#barra-progresso .progress-bar"), 0);
+                resetaView();
+                
+                dialog.close();
+            }
+        },
+        {
+            label: "Não",
+            action: function(dialog) {
+                atualizaValorBarraProgresso($("#barra-progresso .progress-bar"), 0);
+                resetaView();
+
                 dialog.close();
             }
         }]
     });
 }
 
+async function abraModalSimples(titulo, mensagem) {
+    BootstrapDialog.show({
+        title: `${titulo}`,
+        message: `${mensagem}`,
+        animate: true,
+        buttons: [{
+            label: 'Fechar',
+            action: function(dialog) {
+                atualizaValorBarraProgresso($("#barra-progresso .progress-bar"), 0);
+                resetaView();
+
+                dialog.close();
+            }
+        }]
+    });
+}
+
+function resetaView() {
+    $("#botao-disparo button").attr("disabled", "");
+
+    $("#drop-zone").css("border-color", "gray");
+    $("#drop-zone p").text("Arraste o arquivo .JSON aqui...");
+
+    //$("#barra-progresso").attr("hidden", "");
+
+    alvos = [];
+}
+
 function download(content, fileName, contentType) {
     let a = document.createElement("a");
-    let file = new Blob([content], { type: contentType });
-    a.href = URL.createObjectURL(file);
+
+    a.href = URL.createObjectURL(new Blob([content], { type: contentType }));
     a.download = fileName;
     a.click();
 }
