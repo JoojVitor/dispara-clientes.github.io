@@ -1,11 +1,15 @@
-#drop_zone {
+#drop-zone {
     border: 2px dashed gray;
     padding: 1rem;
-    margin: 1rem;
+    margin: 1rem 0rem 1rem 0rem;
     width:  fit-content;
     height: fit-content;
 }
 
 button {
     margin-left: 1rem;
+}
+
+.progress {
+    margin-top: 1rem;
 }
