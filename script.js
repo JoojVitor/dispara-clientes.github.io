@@ -90,7 +90,7 @@ function monteBody(alvo) {
     return {
         "cod_conta": 17,
         "hsm": alvo["type"],
-        "cod_flow": "711",
+        "cod_flow": "738",
         "start_flow": 1,
         "flow_variaveis": { "cpfCnpj": alvo["cpfCnpj"] },
         "contato": { "telefone": parseInt(`55${alvo["Telefone"]}`), "nome": alvo["nome"] },
