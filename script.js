@@ -48,7 +48,7 @@ function efetueDisparo() {
         return;
     }
 
-    const proxyUrl = "https://afternoon-sierra-49318.herokuapp.com/";
+    const proxyUrl = "https://cors-app-disparador.onrender.com/";
 
     $("#barra-progresso").removeAttr("hidden");
 
@@ -75,7 +75,6 @@ function efetueDisparo() {
         }).always(function() {
             progresso = Math.round((count * 100) / alvos["mailing"].length);
             atualizaValorBarraProgresso($("#barra-progresso .progress-bar"), progresso);
-            console.log(`opa ${progresso}`);
         });
     });
 
