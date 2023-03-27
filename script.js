@@ -48,7 +48,7 @@ function efetueDisparo() {
         return;
     }
 
-    const proxyUrl = "http://[::1]:10000/hsm";
+    const proxyUrl = "https://server-hsm.onrender.com";
 
     $("#barra-progresso").removeAttr("hidden");
 
@@ -68,7 +68,7 @@ function efetueDisparo() {
             type: "POST",
             data: JSON.stringify(monteBody(alvo)),
             headers: header,
-            url: `${proxyUrl}`,
+            url: `${proxyUrl}/hsm`,
 
         }).fail(function(textStatus) {
             erros.push({ "erro": textStatus["responseJSON"], "alvo": alvo["Telefone"]});
